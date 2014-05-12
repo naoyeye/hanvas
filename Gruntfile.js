@@ -130,6 +130,17 @@ module.exports = function (grunt) {
                         '!**/*.jade'
                     ]
                 }]
+            },
+            js : {
+                files : [{
+                    expand : true,
+                    dot : true,
+                    cwd : '<%= paths.app %>',
+                    dest : '<%= paths.tmp %>',
+                    src : [
+                        '**/*.js'
+                    ]
+                }]
             }
         },
         compass : {
@@ -193,7 +204,9 @@ module.exports = function (grunt) {
             }
         },
         concurrent: {
-            dist : ['copy:dist', 'compass:dist']
+            server : ['compass:server', 'copy:js'],
+            staging : ['copy:dist', 'copy:js'],
+            dist : ['copy:dist', 'compass:dist', 'copy:js']
         },
         jshint : {
             options : {
@@ -322,9 +335,11 @@ module.exports = function (grunt) {
     grunt.registerTask('server', [
         'clean:server',
         'jade:server',
-        'compass:server',
-        'configureRewriteRules',
+        'concurrent:server',
+        // 'compass:server',
         'connect:server',
+        'configureRewriteRules',
+        // 'connect:server',
         // 'stencil:server',
         'karma:server',
         'open',
